@@ -56,8 +56,10 @@ class MineralHaulingController extends Controller
         // load all potential recipes
         $recipes = InvTypeMaterial::whereIn("materialTypeID",array_keys($products))
             ->join("invTypes","invTypes.typeID","invTypeMaterials.typeID")
+            ->join("market_prices","invTypes.typeID","market_prices.type_id")
             ->where("published",true)
             ->where("marketGroupID","!=",null)
+            ->where("order_count",">","0")
             ->whereIn("groupID",$ore_groups) // TODO create options
             ->distinct()
             //->limit(100)
