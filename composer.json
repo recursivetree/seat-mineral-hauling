@@ -1,0 +1,35 @@
+{
+  "name": "recursivetree/seat-mineral-hauling",
+  "description": "eve mineral hauling calculator plugin for seat",
+  "license": "GPL-2.0",
+  "type": "seat-plugin",
+  "authors": [
+    {
+      "name": "recursivetree",
+      "email": "recursivetreemail@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "RecursiveTree\\Seat\\MineralHauling\\": "src/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": "^8.2",
+    "laravel/framework": "^10.0",
+    "eveseat/web": "^5.0",
+    "eveseat/eveapi": "^5.0",
+    "eveseat/services": "^5.0.1",
+    "recursivetree/seat-prices-core": "dev-master",
+    "recursivetree/seat-treelib": "^5.0.x-dev"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "RecursiveTree\\Seat\\MineralHauling\\MineralHaulingServiceProvider"
+      ]
+    }
+  }
+}
