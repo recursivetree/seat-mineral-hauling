@@ -24,12 +24,12 @@ class MineralHaulingController extends Controller
             'mode'=>'required|string|in:volume,price,transport,total',
             'iskm3'=>'required|numeric',
             'collateral'=>'required|numeric',
+            'refinerate'=>'required|numeric',
             'priceprovider'=>'required|integer',
         ]);
 
         //TODO make these settings
-        $ore_modifier = 0.85;
-        $scrap_modifier = 0.52;
+        $ore_modifier = floatval($request->refinerate);
         $m3_cost = floatval($request->iskm3);
         $collateral_modifier = floatval($request->collateral)/100.0;
         $enable_ints = false;
@@ -97,13 +97,8 @@ class MineralHaulingController extends Controller
             ];
 
             foreach ($reprocessing_products as $product){
-                if($ore_groups->contains($product->typeID)){
-                    $modifier = $ore_modifier;
-                } else {
-                    $modifier = $scrap_modifier;
-                }
 
-                $data[strval($product->materialTypeID)] = $product->quantity * $modifier / $recipe->portionSize;
+                $data[strval($product->materialTypeID)] = $product->quantity * $ore_modifier / $recipe->portionSize;
             }
 
             $variables[strval($recipe->typeID)] = $data;

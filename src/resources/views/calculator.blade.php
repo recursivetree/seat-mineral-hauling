@@ -59,6 +59,11 @@
             </div>
 
             <div class="form-group">
+                <label for="orerefinerate">Ore Refine Rate</label>
+                <input type="number" id="orerefinerate" class="form-control" value="{{ setting('reprocessing_yield') ?: 0.8 }}" min="0" max="1" step="0.0001">
+            </div>
+
+            <div class="form-group">
                 <button type="button" class="btn btn-primary" id="calculate">Calculate</button>
             </div>
         </div>
@@ -157,7 +162,8 @@
                     priceprovider: parseInt(document.querySelector("#priceprovider").value),
                     iskm3: parseFloat(document.querySelector("#iskm3").value),
                     collateral: parseFloat(document.querySelector("#collateral").value),
-                    items: document.querySelector("#items").value
+                    items: document.querySelector("#items").value,
+                    refinerate: parseFloat(document.querySelector("#orerefinerate").value)
                 })
             })
             if (!request.ok) {
