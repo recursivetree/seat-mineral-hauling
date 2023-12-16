@@ -162,6 +162,7 @@
             })
             if (!request.ok) {
                 button.textContent = "Failed to load data from server!"
+                button.disabled = false
                 return
             }
 
