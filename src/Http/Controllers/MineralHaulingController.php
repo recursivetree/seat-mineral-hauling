@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use RecursiveTree\Seat\PricesCore\Facades\PriceProviderSystem;
 use RecursiveTree\Seat\TreeLib\Parser\Parser;
+use Seat\Eveapi\Models\Market\MarketOrder;
 use Seat\Eveapi\Models\Sde\InvGroup;
 use Seat\Eveapi\Models\Sde\InvType;
 use Seat\Eveapi\Models\Sde\InvTypeMaterial;
@@ -60,7 +61,7 @@ class MineralHaulingController extends Controller
             ->join("invTypes","invTypes.typeID","invTypeMaterials.typeID")
             ->where("published",true)
             ->where("marketGroupID","!=",null)
-            ->where(DB::raw("EXISTS(SELECT * from market_orders WHERE type_id=invTypeMaterials.typeID and is_buy_order=false)"), true)
+            ->where(DB::raw("(SELECT COUNT(*) from market_orders WHERE type_id=invTypeMaterials.typeID and is_buy_order=false)"), ">", 5)
             ->where("typeName","like","Compressed %")
             ->whereIn("groupID",$ore_groups) // TODO create options
             ->groupBy("invTypeMaterials.typeID","invTypes.typeName","invTypes.volume","invTypes.portionSize")
@@ -97,6 +98,7 @@ class MineralHaulingController extends Controller
 
             $data = [
                 'cost'=>$cost,
+                strval($recipe->typeID)=>1,
             ];
 
             foreach ($reprocessing_products as $product){
@@ -111,6 +113,13 @@ class MineralHaulingController extends Controller
         $constraints = [];
         foreach ($products as $type_id=>$amount){
             $constraints[strval($type_id)] = ["min"=>$amount];
+        }
+        foreach ($recipes as $recipe){
+            $available = MarketOrder::where("type_id",$recipe->typeID)
+                ->where("is_buy_order", false)
+                ->where("price","<",$prices[$recipe->typeID])
+                ->sum("volume_remaining");
+            $constraints[strval($recipe->typeID)]=["max"=>$available*1.05];
         }
 
         // generate integer constraints
