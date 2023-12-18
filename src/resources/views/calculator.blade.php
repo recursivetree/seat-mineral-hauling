@@ -12,7 +12,7 @@
         </div>
         <div class="card-body">
             <p>
-                This calculator calculates the most efficient way to move minerals by searching for the ideal combination of ores to refine.
+                This calculator calculates the most efficient way to move minerals by searching for the ideal combination of compressed ores to refine.
             </p>
             <div class="form-group">
                 @csrf
@@ -138,7 +138,7 @@
                 })
 
                 const tdAmount = document.createElement("td")
-                tdAmount.textContent = value
+                tdAmount.textContent = Math.ceil(value/100)*100
 
                 tr.appendChild(tdItem)
                 tr.appendChild(tdAmount)

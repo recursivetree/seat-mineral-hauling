@@ -4,6 +4,7 @@ namespace RecursiveTree\Seat\MineralHauling\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\DB;
 use RecursiveTree\Seat\PricesCore\Facades\PriceProviderSystem;
 use RecursiveTree\Seat\TreeLib\Parser\Parser;
 use Seat\Eveapi\Models\Sde\InvGroup;
@@ -54,21 +55,24 @@ class MineralHaulingController extends Controller
         }
 
         // load all potential recipes
-        $recipes = InvTypeMaterial::whereIn("materialTypeID",array_keys($products))
+        $recipes = InvTypeMaterial::select("invTypeMaterials.typeID","invTypes.typeName","invTypes.volume","invTypes.portionSize")
+            ->whereIn("materialTypeID",array_keys($products))
             ->join("invTypes","invTypes.typeID","invTypeMaterials.typeID")
-            ->join("market_prices","invTypes.typeID","market_prices.type_id")
             ->where("published",true)
             ->where("marketGroupID","!=",null)
-            ->where("order_count",">","0")
+            ->where(DB::raw("EXISTS(SELECT * from market_orders WHERE type_id=invTypeMaterials.typeID and is_buy_order=false)"), true)
+            ->where("typeName","like","Compressed %")
             ->whereIn("groupID",$ore_groups) // TODO create options
-            ->distinct()
+            ->groupBy("invTypeMaterials.typeID","invTypes.typeName","invTypes.volume","invTypes.portionSize")
             //->limit(100)
             ->get();
+        //dd($recipes->pluck("typeName"));
 
         // load prices of recipe items
         $priceable_recipes = $recipes->map(function ($item){
             return new PriceableEveType($item->typeID, 1);
         });
+        //dd($products, $priceable_recipes);
         PriceProviderSystem::getPrices($request->priceprovider,$priceable_recipes);
         $prices = [];
         foreach ($priceable_recipes as $priceable_recipe){
