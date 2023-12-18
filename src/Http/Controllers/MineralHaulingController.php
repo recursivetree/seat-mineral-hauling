@@ -64,15 +64,12 @@ class MineralHaulingController extends Controller
             ->where("typeName","like","Compressed %")
             ->whereIn("groupID",$ore_groups) // TODO create options
             ->groupBy("invTypeMaterials.typeID","invTypes.typeName","invTypes.volume","invTypes.portionSize")
-            //->limit(100)
             ->get();
-        //dd($recipes->pluck("typeName"));
 
         // load prices of recipe items
         $priceable_recipes = $recipes->map(function ($item){
             return new PriceableEveType($item->typeID, 1);
         });
-        //dd($products, $priceable_recipes);
         PriceProviderSystem::getPrices($request->priceprovider,$priceable_recipes);
         $prices = [];
         foreach ($priceable_recipes as $priceable_recipe){
