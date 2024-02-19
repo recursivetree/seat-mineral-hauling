@@ -14,6 +14,12 @@
             <p>
                 This calculator calculates the most efficient way to move minerals by searching for the ideal combination of compressed ores to refine.
             </p>
+            <label>Ores Considered</label>
+            <ul>
+                @foreach($ores as $ore)
+                    <li>{{$ore->typeName}}</li>
+                @endforeach
+            </ul>
             <div class="form-group">
                 @csrf
                 <div class="form-group">
@@ -96,6 +102,8 @@
         const table = document.querySelector("#table-content")
         const goal = document.querySelector("#goal")
 
+        let items = {}
+
         function updateAdditionalSettingsVisibility () {
             const mode = goal.value
             if(mode === "volume" || mode === "price") {
@@ -138,7 +146,7 @@
                 })
 
                 const tdAmount = document.createElement("td")
-                tdAmount.textContent = Math.ceil(value/100)*100
+                tdAmount.textContent = (Math.ceil(value/100)*100).toFixed(0)
 
                 tr.appendChild(tdItem)
                 tr.appendChild(tdAmount)
@@ -147,6 +155,11 @@
         }
 
         button.addEventListener("click", async function () {
+            if(goal.value !== 'volume' && !parseInt(document.querySelector("#priceprovider").value)){
+                button.textContent="Missing a price provider!"
+                return;
+            }
+
             button.textContent = "Calculating..."
             button.disabled = true
 
@@ -159,7 +172,7 @@
                 },
                 body: JSON.stringify({
                     mode: goal.value,
-                    priceprovider: parseInt(document.querySelector("#priceprovider").value),
+                    priceprovider: parseInt(document.querySelector("#priceprovider").value) || null,
                     iskm3: parseFloat(document.querySelector("#iskm3").value),
                     collateral: parseFloat(document.querySelector("#collateral").value),
                     items: document.querySelector("#items").value,
