@@ -70,6 +70,20 @@
             </div>
 
             <div class="form-group">
+                <div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="fastMode" value="false" checked name="mode">
+                    <label class="form-check-label" for="fastMode">Fast Mode</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="exactMode" value="true" name="mode">
+                    <label class="form-check-label" for="exactMode">Exact Mode</label>
+                </div>
+                </div>
+                <small class="text-muted">Exact Mode produces better results for small quantities, but it might take significantly longer.</small>
+            </div>
+
+            <div class="form-group">
                 <button type="button" class="btn btn-primary" id="calculate">Calculate</button>
             </div>
         </div>
@@ -176,7 +190,8 @@
                     iskm3: parseFloat(document.querySelector("#iskm3").value),
                     collateral: parseFloat(document.querySelector("#collateral").value),
                     items: document.querySelector("#items").value,
-                    refinerate: parseFloat(document.querySelector("#orerefinerate").value)
+                    refinerate: parseFloat(document.querySelector("#orerefinerate").value),
+                    ints: document.getElementById("exactMode").checked
                 })
             })
             if (!request.ok) {

@@ -55,6 +55,7 @@ class MineralHaulingController extends Controller
             'collateral' => 'required|numeric',
             'refinerate' => 'required|numeric',
             'priceprovider' => 'integer|nullable',
+            'ints'=>'required|boolean'
         ]);
 
         //TODO make these settings
@@ -141,8 +142,10 @@ class MineralHaulingController extends Controller
 
         // generate integer constraints
         $ints = [];
-        foreach ($recipes as $recipe) {
-            $ints[strval($recipe->typeID)] = $recipe->portionSize;
+        if($request->ints) {
+            foreach ($recipes as $recipe) {
+                $ints[strval($recipe->typeID)] = $recipe->portionSize;
+            }
         }
 
 
